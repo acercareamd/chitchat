@@ -1,0 +1,44 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Chat Room</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+        <script src="{{ url_for('static', filename='script.js') }}"></script>
+    </head>
+    <body>
+        <div class="chat-container">
+            <header>
+                <h1>ᴇɴɢɪɴᴇᴇʀ</h1>
+                <p>{{ username }}</p>
+            </header>
+            <div id="chat-box" class="chat-box"></div>
+            <div class="message-box">
+                <input id="message-input" class="message-input" type="text" placeholder="Type your message here...">
+                <label for="image-input" class="image-label">Choose File</label>
+                <input type="file" id="image-input" class="image-input" accept="image/*">
+                <button type="submit" id="send-button">Send</button>
+
+            </div>
+        </div>
+
+        <!-- Modal for Image Preview -->
+        <div id="image-modal" class="image-modal">
+            <span class="close-modal">&times;</span>
+            <img class="modal-content" id="modal-image">
+            <div id="caption"></div>
+        </div>
+
+        <div class="message">
+        <strong class="username">User1:</strong> This is a message<br>
+        <span class="timestamp">2024-08-15T12:34:56Z</span>
+    </div>
+
+        <script>
+            var username = "{{ username }}";
+            initializeSocket(username);
+        </script>
+    </body>
+    </html>
