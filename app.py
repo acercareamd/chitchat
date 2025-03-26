@@ -75,4 +75,4 @@ def check_user_status():
 
 if __name__ == '__main__':
     socketio.start_background_task(check_user_status)
-    socketio.run(app, debug=True)
+    socketio.run(app, host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
