@@ -67,25 +67,29 @@ html, body {
 
 header {
     background-color: #333333; /* Dark grey background for header */
-    color: #00ff00; /* Bright green text */
+    color: #d50d7b; /* Bright green text */
     padding: 2px;
     text-align: center;
     font-size: 24px;
     border-bottom: 0px solid #00ff00; /* Green border */
-    height: 40px;
+    height: 50px;
 }
 header h1{
-    margin-top: -9px;
+    margin-top: -10px;
     margin-left: 10px;
     font-size: 40px;
+    display: flex;
+    justify-content: flex-start;
 }
 header p{
-    margin-top: -48px;
+    color: #00ff00;
+    margin-top: -35px;
     margin-left: 10px;
-    position: absolute;
+    /* position: absolute; */
     right: 20px;
-
-    font-size: 16px;
+    font-size: 14px;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .chat-box {
@@ -101,6 +105,15 @@ header p{
     background-color: #333333; /* Dark grey background for message box */
     border-top: 0px solid #00ff00; /* Green border */
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Shadow effect */
+}
+
+.username{
+    font-size: 1.5vh; /* Larger font size for username */
+    color: #7d8585; /* Bright green text for username */
+    margin-bottom: 5px;
+    margin-top: -5px;
+    display: flex;
+    
 }
 
 .message-input {
@@ -120,7 +133,7 @@ header p{
 
 .image-label {
     padding: 10px 20px;
-    background-color: #00ff00; /* Bright green button */
+    background-color: #acacac; /* Bright green button */
     color: #000000; /* Black text for button */
     border: none;
     border-radius: 8px;
@@ -136,7 +149,7 @@ header p{
 
 #send-button {
     padding: 10px 20px;
-    background-color: #00ff00; /* Bright green button */
+    background-color: #acacac; /* Bright green button */
     color: #000000; /* Black text for button */
     border: none;
     border-radius: 8px;
@@ -153,20 +166,32 @@ header p{
     margin-bottom: 10px;
     background-color: #333333; /* Dark grey background for message */
     border-radius: 8px;
-    width: fit-content;
+    width: 100%; /* Full width of the container */
+    box-sizing: border-box; /* Ensure padding doesn't increase the width */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    word-wrap: break-word; /* Break long words to fit within the box */
+    white-space: normal; /* Allow text to wrap */
+    max-width: 100%; /* Prevents box from overflowing the container */
 }
 
-.message .username {
-    color: #00ff00; /* Light green for usernames */
-}
-
+/* Adjustments for message */
 .message .text {
-    font-weight: bold; /* Bold text for messages */
+    width: 95%;
+    color: #00eaff;
+    font-size: 0.9em; /* Larger font size for messages */
+     /* Bold text for messages */
 }
 
+/* Username styling - below the message */
+.message .username {
+    font-size: 12px; /* Smaller font size for the username */
+    color: #666666; /* Lighter color for the username */
+    margin-top: 5px;
+}
+
+/* Timestamp styling */
 .timestamp {
     display: none; /* Hide timestamp by default */
     font-size: 12px;
@@ -218,13 +243,16 @@ header p{
 
 /* Responsive Design */
 @media screen and (max-width: 600px) {
+    .chat-container{
+        height: 50vh; /* Adjust height for smaller screens */
+    }
     .message-input, .image-label, #send-button {
         font-size: 14px;
         padding: 8px 15px;
     }
 
     .message {
-        font-size: 14px;
+        font-size: 20px;
     }
 
     .modal-content {
@@ -234,13 +262,17 @@ header p{
 }
 
 @media screen and (max-width: 400px) {
+    .chat-container{
+        height: 50vh; /* Adjust height for smaller screens */
+    }
+
     .message-input, .image-label, #send-button {
         font-size: 12px;
         padding: 6px 12px;
     }
 
     .message {
-        font-size: 12px;
+        font-size: 20px;
     }
 
     .modal-content {
@@ -248,7 +280,6 @@ header p{
         max-height: 80%;
     }
 }
-
 
 .message .view-button {
     padding: 5px 10px;
