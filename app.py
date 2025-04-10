@@ -1,9 +1,14 @@
+
+import eventlet
+eventlet.monkey_patch()
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, jsonify
 from flask_socketio import SocketIO, emit
 import os
 import threading
 import base64
 import time
+import eventlet
+eventlet.monkey_patch()
 from datetime import datetime
 
 app = Flask(__name__)
@@ -103,10 +108,19 @@ def check_user_status():
 
         time.sleep(1)  # Run every 1 second
 
+# if __name__ == '__main__':
+#     port = int(os.environ.get("PORT", 5000))
+
+#     # Run background task in a separate thread
+#     threading.Thread(target=check_user_status, daemon=True).start()
+
+#     socketio.run(app, host='0.0.0.0', port=port, debug=True)
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
 
     # Run background task in a separate thread
     threading.Thread(target=check_user_status, daemon=True).start()
 
-    socketio.run(app, host='0.0.0.0', port=port, debug=True)
+    # Use eventlet for async compatibility on Railway
+    socketio.run(app, host='0.0.0.0', port=port)
