@@ -296,3 +296,11 @@ header p{
 .message .view-button:hover {
     background-color: #009900; /* Darker green on hover */
 }
+
+
+.status-message {
+    font-size: 14px;
+    color: #ffaa00; /* Bright green text for status messages */
+    margin-top: 10px;
+    
+}

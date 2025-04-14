@@ -1,13 +1,49 @@
 function initializeSocket(username) {
-    var socket = io();
+    const socket = io();
+    let currentStatus = null; // Tracks the current status (online/offline)
+    let statusEmitted = false; // Flag to ensure emission happens only once per focus/blur
 
-    // Emit user status when connected or disconnected
+    // Function to emit the status change if it has changed
+    function emitStatusIfChanged(newStatus) {
+        if (newStatus !== currentStatus) {
+            currentStatus = newStatus;
+            socket.emit('user_status', { username: username, status: newStatus });
+            statusEmitted = true; // Mark that we've emitted the status
+        }
+    }
+
+    // Handle page focus (user is active on the page)
+    function handleFocus() {
+        if (!statusEmitted) {
+            emitStatusIfChanged('online'); // User is now online
+        }
+    }
+
+    // Handle page blur (user switches tabs or minimizes the window)
+    function handleBlur() {
+        if (!statusEmitted) {
+            emitStatusIfChanged('offline'); // User is now offline
+        }
+    }
+
+    // Listen for focus and blur events to detect when the user is active or inactive
+    window.addEventListener('focus', function () {
+        statusEmitted = false; // Reset flag when the page gains focus
+        handleFocus(); // Check if status should be changed to online
+    });
+
+    window.addEventListener('blur', function () {
+        statusEmitted = false; // Reset flag when the page loses focus
+        handleBlur(); // Check if status should be changed to offline
+    });
+
+    // Emit status when socket connects or disconnects
     socket.on('connect', function () {
-        socket.emit('user_status', { username: username, status: 'online' });
+        emitStatusIfChanged('online');
     });
 
     socket.on('disconnect', function () {
-        socket.emit('user_status', { username: username, status: 'offline' });
+        emitStatusIfChanged('offline');
     });
 
     // Handle incoming messages
@@ -15,7 +51,7 @@ function initializeSocket(username) {
         appendMessage(data.username, data.message, data.timestamp);
     });
 
-    // Handle incoming images
+    // Handle incoming image messages
     socket.on('image', function (data) {
         appendImageMessage(data.username, data.image_url, data.filename, data.timestamp);
     });
@@ -25,7 +61,7 @@ function initializeSocket(username) {
         appendStatusMessage(data.username, data.status);
     });
 
-    // Send message on Enter key press or Send button click
+    // Send message when enter key is pressed or send button is clicked
     document.getElementById('message-input').addEventListener('keypress', function (event) {
         if (event.key === 'Enter') {
             event.preventDefault();
@@ -37,7 +73,7 @@ function initializeSocket(username) {
         sendMessage(socket, username);
     });
 
-    // Send image when file input changes
+    // Image input change handler
     document.getElementById('image-input').addEventListener('change', function () {
         var file = this.files[0];
         if (file) {
@@ -46,7 +82,11 @@ function initializeSocket(username) {
                 var arrayBuffer = e.target.result;
                 var image_data = new Uint8Array(arrayBuffer);
                 var filename = file.name;
-                socket.emit('image', { 'username': username, 'image_data': image_data, 'filename': filename });
+                socket.emit('image', {
+                    'username': username,
+                    'image_data': image_data,
+                    'filename': filename
+                });
             };
             reader.onerror = function () {
                 alert("Error reading file.");
@@ -54,6 +94,11 @@ function initializeSocket(username) {
             reader.readAsArrayBuffer(file);
         }
     });
+
+    // Initial check when the page is loaded (in case user is already focused)
+    if (document.hasFocus()) {
+        emitStatusIfChanged('online');
+    }
 }
 
 // Send a message
@@ -61,71 +106,72 @@ function sendMessage(socket, username) {
     var input = document.getElementById('message-input');
     var message = input.value;
     if (message.trim() !== "") {
-        var timestamp = new Date().toISOString(); // Get the current timestamp
+        var timestamp = new Date().toISOString();
         socket.send({ 'username': username, 'message': message, 'timestamp': timestamp });
         input.value = '';
     }
 }
 
-// Append a message to the chat box
+// Format timestamp (24-hour with seconds)
+function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+}
+
+// Append text message to chat box
 function appendMessage(username, message, timestamp) {
     var chatBox = document.getElementById('chat-box');
 
-    // Create a container for message and username
     var messageContainer = document.createElement('div');
     messageContainer.classList.add('message-container');
 
-    // Create message div
     var messageDiv = document.createElement('div');
     messageDiv.classList.add('message');
     messageDiv.innerHTML = `<div class="text">${message}</div>`;
 
-    // Create username div (aligned right)
     var usernameDiv = document.createElement('div');
     usernameDiv.classList.add('username');
-    usernameDiv.textContent = username;
+    usernameDiv.textContent = `${username}  ${formatTimestamp(timestamp)}`;
 
-    // Append message and username to the container
     messageContainer.appendChild(messageDiv);
     messageContainer.appendChild(usernameDiv);
 
-    // Append to chat box
     chatBox.appendChild(messageContainer);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Append an image message to the chat box
+// Append image message to chat box
 function appendImageMessage(username, imageUrl, filename, timestamp) {
     var chatBox = document.getElementById('chat-box');
 
-    // Create a container for message and username
     var messageContainer = document.createElement('div');
     messageContainer.classList.add('message-container');
 
-    // Create message div for image
     var messageDiv = document.createElement('div');
     messageDiv.classList.add('message');
     messageDiv.innerHTML = `
-        <div class="text">${username}: </div>
-        <button class="view-button" onclick="openImageModal('${imageUrl}', '${filename}')">View Image</button><br>
-        <span class="timestamp">${timestamp}</span>
+        <div class="text">
+            <button class="view-button" onclick="openImageModal('${imageUrl}', '${filename}')">View Image</button>
+        </div>
     `;
 
-    // Create username div (aligned right)
     var usernameDiv = document.createElement('div');
     usernameDiv.classList.add('username');
-    usernameDiv.textContent = username;
+    usernameDiv.textContent = `${username} • ${formatTimestamp(timestamp)}`;
 
-    // Append message and username to the container
     messageContainer.appendChild(messageDiv);
     messageContainer.appendChild(usernameDiv);
 
-    // Append to chat box
     chatBox.appendChild(messageContainer);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Append a status message to the chat box
+// Append status message to chat box
 function appendStatusMessage(username, status) {
     var chatBox = document.getElementById('chat-box');
     var newMessage = document.createElement('div');
@@ -135,7 +181,7 @@ function appendStatusMessage(username, status) {
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Open the image in a modal
+// Open image modal
 function openImageModal(imageUrl, filename) {
     var modal = document.getElementById('image-modal');
     var modalImg = document.getElementById('modal-image');
@@ -150,14 +196,12 @@ function openImageModal(imageUrl, filename) {
         modal.style.display = "none";
     };
 
-    // Close modal when clicking outside of the image
     window.onclick = function (event) {
         if (event.target === modal) {
             modal.style.display = "none";
         }
     };
 
-    // Close modal on escape key press
     document.onkeydown = function (event) {
         if (event.key === "Escape") {
             modal.style.display = "none";
