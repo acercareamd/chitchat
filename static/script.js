@@ -53,7 +53,7 @@ function initializeSocket(username) {
 
     // Handle incoming image messages
     socket.on('image', function (data) {
-        appendImageMessage(data.username, data.image_url, data.filename, data.timestamp);
+        appendImageMessage(data.username, data.image_data, data.filename, data.mime_type, data.timestamp);
     });
 
     // Handle user status updates
@@ -80,18 +80,20 @@ function initializeSocket(username) {
             var reader = new FileReader();
             reader.onload = function (e) {
                 var arrayBuffer = e.target.result;
-                var image_data = new Uint8Array(arrayBuffer);
+                var image_data = new Uint8Array(arrayBuffer); // Raw binary data
                 var filename = file.name;
+                var mime_type = file.type; // e.g., 'image/png'
                 socket.emit('image', {
                     'username': username,
-                    'image_data': image_data,
-                    'filename': filename
+                    'image_data': image_data, // Send raw binary data
+                    'filename': filename,
+                    'mime_type': mime_type
                 });
             };
             reader.onerror = function () {
                 alert("Error reading file.");
             };
-            reader.readAsArrayBuffer(file);
+            reader.readAsArrayBuffer(file); // Read as ArrayBuffer
         }
     });
 
@@ -146,17 +148,22 @@ function appendMessage(username, message, timestamp) {
 }
 
 // Append image message to chat box
-function appendImageMessage(username, imageUrl, filename, timestamp) {
+function appendImageMessage(username, imageData, filename, mimeType, timestamp) {
     var chatBox = document.getElementById('chat-box');
 
     var messageContainer = document.createElement('div');
     messageContainer.classList.add('message-container');
+
+    // Create Blob from binary data
+    var blob = new Blob([imageData], { type: mimeType });
+    var imageUrl = URL.createObjectURL(blob);
 
     var messageDiv = document.createElement('div');
     messageDiv.classList.add('message');
     messageDiv.innerHTML = `
         <div class="text">
             <button class="view-button" onclick="openImageModal('${imageUrl}', '${filename}')">View Image</button>
+            
         </div>
     `;
 
@@ -188,23 +195,27 @@ function openImageModal(imageUrl, filename) {
     var captionText = document.getElementById('caption');
 
     modal.style.display = "block";
-    modalImg.src = imageUrl;
+    modalImg.src = imageUrl; // Use Blob URL
     captionText.innerHTML = filename;
 
     var closeModal = document.getElementsByClassName('close-modal')[0];
     closeModal.onclick = function () {
         modal.style.display = "none";
+        // Revoke Blob URL to free memory
+        URL.revokeObjectURL(imageUrl);
     };
 
     window.onclick = function (event) {
         if (event.target === modal) {
             modal.style.display = "none";
+            URL.revokeObjectURL(imageUrl);
         }
     };
 
     document.onkeydown = function (event) {
         if (event.key === "Escape") {
             modal.style.display = "none";
+            URL.revokeObjectURL(imageUrl);
         }
     };
 }
