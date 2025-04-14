@@ -125,6 +125,7 @@ header p{
     background-color: #000000; /* Black background for input */
     color: #00ff00; /* Bright green text */
     margin-right: 10px;
+   
 }
 
 .image-input {
@@ -141,6 +142,7 @@ header p{
     font-size: 16px;
     margin-right: 10px;
     text-align: center;
+    width: 10%; /* Full width of the container */
 }
 
 .image-label:hover {
@@ -157,7 +159,7 @@ header p{
     font-size: 16px;
 }
 
-.send-button:hover {
+#send-button:hover {
     background-color: #009900; /* Darker green on hover */
 }
 
@@ -300,7 +302,7 @@ header p{
 
 .status-message {
     font-size: 14px;
-    color: #ffaa00; /* Bright green text for status messages */
+    color: #7f7d85; /* Bright green text for status messages */
     margin-top: 10px;
     
 }
