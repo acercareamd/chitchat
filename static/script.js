@@ -138,7 +138,8 @@ function appendMessage(username, message, timestamp) {
 
     var usernameDiv = document.createElement('div');
     usernameDiv.classList.add('username');
-    usernameDiv.textContent = `${username}  ${formatTimestamp(timestamp)}`;
+    // Use client's local time by creating a new Date object
+    usernameDiv.textContent = `${username}  ${formatTimestamp(new Date())}`;
 
     messageContainer.appendChild(messageDiv);
     messageContainer.appendChild(usernameDiv);
@@ -169,7 +170,8 @@ function appendImageMessage(username, imageData, filename, mimeType, timestamp) 
 
     var usernameDiv = document.createElement('div');
     usernameDiv.classList.add('username');
-    usernameDiv.textContent = `${username} • ${formatTimestamp(timestamp)}`;
+    // Use client's local time by creating a new Date object
+    usernameDiv.textContent = `${username} • ${formatTimestamp(new Date())}`;
 
     messageContainer.appendChild(messageDiv);
     messageContainer.appendChild(usernameDiv);
