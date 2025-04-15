@@ -99,22 +99,29 @@ function initializeSocket(username) {
 
     // Prevent page scrolling when message input is focused (mobile keyboard)
     const messageInput = document.getElementById('message-input');
+    const chatBox = document.getElementById('chat-box');
+    let isInputFocused = false;
+
     messageInput.addEventListener('focus', function () {
-        // Only apply in mobile mode (match CSS media query)
         if (window.innerWidth <= 600) {
-            document.body.style.overflow = 'hidden'; // Reinforce no scrolling
-            document.body.style.position = 'fixed'; // Lock body in place
-            document.body.style.width = '100%';
+            isInputFocused = true;
         }
     });
+
     messageInput.addEventListener('blur', function () {
-        // Restore default behavior when input loses focus
-        if (window.innerWidth <= 600) {
-            document.body.style.overflow = 'hidden'; // Keep no scrolling in mobile
-            document.body.style.position = 'fixed';
-            document.body.style.width = '100%';
-        }
+        isInputFocused = false;
     });
+
+    document.addEventListener('touchmove', function (event) {
+        if (isInputFocused && window.innerWidth <= 600) {
+            // Allow scrolling in chat-box
+            if (event.target === chatBox || chatBox.contains(event.target)) {
+                return;
+            }
+            // Prevent scrolling on the rest of the page
+            event.preventDefault();
+        }
+    }, { passive: false });
 
     // Initial check when the page is loaded (in case user is already focused)
     if (document.hasFocus()) {
