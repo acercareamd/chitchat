@@ -8,6 +8,7 @@ html, body {
     font-family: Verdana, sans-serif; /* Verdana font for the page */
     background-color: #000000; /* Black background color */
     color: #00ff00; /* Bright green text color */
+
 }
 
 /* Login Screen (index.html) */
@@ -245,6 +246,12 @@ header p{
 
 /* Responsive Design */
 @media screen and (max-width: 600px) {
+
+    html, body {
+        overflow: hidden; /* Block page scrolling in mobile mode */
+    }
+
+    
     .chat-container{
         height: 50vh; /* Adjust height for smaller screens */
     }
@@ -264,6 +271,11 @@ header p{
 }
 
 @media screen and (max-width: 400px) {
+
+    html, body {
+        overflow: hidden; /* Block page scrolling in mobile mode */
+    }
+
     .chat-container{
         height: 50vh; /* Adjust height for smaller screens */
     }
