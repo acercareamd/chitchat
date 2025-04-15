@@ -248,10 +248,11 @@ header p{
 @media screen and (max-width: 600px) {
 
     html, body {
-        overflow: hidden; /* Block page scrolling in mobile mode */
+        overflow: hidden;
+        position: fixed; /* Block page scrolling in mobile mode */
     }
 
-    
+
     .chat-container{
         height: 50vh; /* Adjust height for smaller screens */
     }
@@ -273,7 +274,8 @@ header p{
 @media screen and (max-width: 400px) {
 
     html, body {
-        overflow: hidden; /* Block page scrolling in mobile mode */
+        overflow: hidden;
+        position: fixed; /* Block page scrolling in mobile mode */
     }
 
     .chat-container{
