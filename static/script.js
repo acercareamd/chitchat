@@ -97,6 +97,25 @@ function initializeSocket(username) {
         }
     });
 
+    // Prevent page scrolling when message input is focused (mobile keyboard)
+    const messageInput = document.getElementById('message-input');
+    messageInput.addEventListener('focus', function () {
+        // Only apply in mobile mode (match CSS media query)
+        if (window.innerWidth <= 600) {
+            document.body.style.overflow = 'hidden'; // Reinforce no scrolling
+            document.body.style.position = 'fixed'; // Lock body in place
+            document.body.style.width = '100%';
+        }
+    });
+    messageInput.addEventListener('blur', function () {
+        // Restore default behavior when input loses focus
+        if (window.innerWidth <= 600) {
+            document.body.style.overflow = 'hidden'; // Keep no scrolling in mobile
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+        }
+    });
+
     // Initial check when the page is loaded (in case user is already focused)
     if (document.hasFocus()) {
         emitStatusIfChanged('online');
