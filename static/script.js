@@ -97,26 +97,23 @@ function initializeSocket(username) {
         }
     });
 
-    // Prevent page scrolling when message input is focused (mobile keyboard)
-    const messageInput = document.getElementById('message-input');
+    // Prevent page scrolling in mobile mode, allow chat-box scrolling
     const chatBox = document.getElementById('chat-box');
-    let isInputFocused = false;
-
-    messageInput.addEventListener('focus', function () {
-        if (window.innerWidth <= 600) {
-            isInputFocused = true;
-        }
-    });
-
-    messageInput.addEventListener('blur', function () {
-        isInputFocused = false;
-    });
+    chatBox.style.overscrollBehavior = 'contain'; // Prevent overscroll propagation
 
     document.addEventListener('touchmove', function (event) {
-        if (isInputFocused && window.innerWidth <= 600) {
+        if (window.innerWidth <= 600) {
             // Allow scrolling in chat-box
             if (event.target === chatBox || chatBox.contains(event.target)) {
-                return;
+                // Check if chat-box can scroll (not at top/bottom limits)
+                const canScrollUp = chatBox.scrollTop > 0;
+                const canScrollDown = chatBox.scrollTop < chatBox.scrollHeight - chatBox.clientHeight;
+                const isScrollingUp = event.deltaY > 0;
+                const isScrollingDown = event.deltaY < 0;
+
+                if ((isScrollingUp && canScrollDown) || (isScrollingDown && canScrollUp)) {
+                    return; // Allow chat-box scrolling
+                }
             }
             // Prevent scrolling on the rest of the page
             event.preventDefault();
