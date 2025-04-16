@@ -99,23 +99,45 @@ function initializeSocket(username) {
 
     // Prevent page scrolling in mobile mode, allow chat-box scrolling
     const chatBox = document.getElementById('chat-box');
-    chatBox.style.overscrollBehavior = 'contain'; // Prevent overscroll propagation
+    const messageInput = document.getElementById('message-input');
+    let isKeyboardActive = false;
 
-    document.addEventListener('touchmove', function (event) {
+    // Track keyboard state
+    messageInput.addEventListener('focus', function () {
         if (window.innerWidth <= 600) {
-            // Allow scrolling in chat-box
-            if (event.target === chatBox || chatBox.contains(event.target)) {
-                // Check if chat-box can scroll (not at top/bottom limits)
-                const canScrollUp = chatBox.scrollTop > 0;
-                const canScrollDown = chatBox.scrollTop < chatBox.scrollHeight - chatBox.clientHeight;
-                const isScrollingUp = event.deltaY > 0;
-                const isScrollingDown = event.deltaY < 0;
+            isKeyboardActive = true;
+        }
+    });
 
-                if ((isScrollingUp && canScrollDown) || (isScrollingDown && canScrollUp)) {
-                    return; // Allow chat-box scrolling
+    messageInput.addEventListener('blur', function () {
+        isKeyboardActive = false;
+    });
+
+    // Allow chat-box to scroll
+    chatBox.addEventListener('touchmove', function (event) {
+        if (window.innerWidth <= 600) {
+            event.stopPropagation();
+            if (isKeyboardActive) {
+                // Prevent upward overscroll when at boundaries with keyboard on
+                const atTop = chatBox.scrollTop <= 0;
+                const atBottom = chatBox.scrollTop >= chatBox.scrollHeight - chatBox.clientHeight;
+                if ((atTop && event.deltaY < 0) || (atBottom && event.deltaY < 0)) {
+                    event.preventDefault();
+                }
+            } else {
+                // Prevent overscroll when keyboard is off
+                const atTop = chatBox.scrollTop <= 0;
+                const atBottom = chatBox.scrollTop >= chatBox.scrollHeight - chatBox.clientHeight;
+                if ((atTop && event.deltaY < 0) || (atBottom && event.deltaY > 0)) {
+                    event.preventDefault();
                 }
             }
-            // Prevent scrolling on the rest of the page
+        }
+    }, { passive: false });
+
+    // Block page scrolling in mobile mode
+    document.addEventListener('touchmove', function (event) {
+        if (window.innerWidth <= 600) {
             event.preventDefault();
         }
     }, { passive: false });
