@@ -2,19 +2,79 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Welcome to Chat Room</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <div class="welcome-container">
         <h1>Welcome to the Chat Room</h1>
-        <form action="{{ url_for('chat') }}">
-            <label for="username">Enter your name:</label>
-            <input type="text" id="username" name="username" required>
+        <form id="join-form">
+            <div class="form-row">
+                <label for="username">Enter your name:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-row">
+                <label for="security_code">Enter security code:</label>
+                <input type="text" id="security_code" name="security_code" class="security-code-input" required>
+            </div>
             <button type="submit" class="enter-button">Enter Chat</button>
         </form>
+        <div id="error-message" class="error"></div>
     </div>
+    <script>
+        // Display error from query parameter if present
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorParam = urlParams.get('error');
+        const errorMessage = document.getElementById('error-message');
+        if (errorParam) {
+            errorMessage.textContent = decodeURIComponent(errorParam);
+            errorMessage.style.display = 'block';
+        }
+
+        document.getElementById('join-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const security_code = document.getElementById('security_code').value.trim();
+
+            // Clear previous error
+            errorMessage.style.display = 'none';
+            errorMessage.textContent = '';
+
+            try {
+                const response = await fetch('/check_username', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, security_code }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Username is available, redirect to chat page
+                    window.location.href = `/chat?username=${encodeURIComponent(username)}&security_code=${encodeURIComponent(security_code)}`;
+                } else {
+                    // Show error message
+                    errorMessage.textContent = data.error || 'An error occurred.';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Failed to connect to server.';
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93198decfdc5bcd4',t:'MTc0NDg2ODA3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

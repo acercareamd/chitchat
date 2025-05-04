@@ -8,7 +8,6 @@ html, body {
     font-family: Verdana, sans-serif; /* Verdana font for the page */
     background-color: #000000; /* Black background color */
     color: #00ff00; /* Bright green text color */
-
 }
 
 /* Login Screen (index.html) */
@@ -16,7 +15,7 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
+    height: 80w%;
     background-color: #000000; /* Black background color for the container */
     flex-direction: column;
     text-align: center;
@@ -24,8 +23,30 @@ html, body {
 
 .welcome-container h1 {
     font-size: 36px;
-    margin-bottom: 20px;
+    margin-bottom: 70px;
     color: #00ff00; /* Bright green text for the heading */
+}
+
+.welcome-container form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; /* Space between form rows */
+}
+
+.welcome-container .form-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Space between label and input */
+    width: 150%;
+    max-width: 400px;
+}
+
+.welcome-container label {
+    font-size: 18px;
+    white-space: nowrap; /* Prevent label wrapping */
 }
 
 .welcome-container input[type="text"] {
@@ -41,6 +62,8 @@ html, body {
     text-align: center; /* Centered text inside the input box */
 }
 
+
+
 .enter-button {
     margin-top: 20px;
     padding: 15px 30px;
@@ -55,6 +78,20 @@ html, body {
 
 .enter-button:hover {
     background-color: #009900; /* Darker green on hover */
+}
+
+/* New styles for security code input */
+.security-code-input {
+    width: 80%;
+    max-width: 400px;
+    padding: 15px;
+    font-size: 18px;
+    border: 1px solid #00ff00; /* Green border */
+    border-radius: 8px;
+    margin-top: 20px;
+    background-color: #000000; /* Black background for input */
+    color: #00ff00; /* Bright green text */
+    text-align: center; /* Centered text inside the input box */
 }
 
 /* Chat Screen (chat.html) */
@@ -246,13 +283,10 @@ header p{
 
 /* Responsive Design */
 @media screen and (max-width: 600px) {
-
     html, body {
         overflow: hidden;
         position: fixed; /* Block page scrolling in mobile mode */
     }
-
-
     .chat-container{
         height: 50vh; /* Adjust height for smaller screens */
     }
@@ -260,11 +294,9 @@ header p{
         font-size: 14px;
         padding: 8px 15px;
     }
-
     .message {
         font-size: 20px;
     }
-
     .modal-content {
         max-width: 90%;
         max-height: 90%;
@@ -272,25 +304,20 @@ header p{
 }
 
 @media screen and (max-width: 400px) {
-
     html, body {
         overflow: hidden;
         position: fixed; /* Block page scrolling in mobile mode */
     }
-
     .chat-container{
         height: 50vh; /* Adjust height for smaller screens */
     }
-
     .message-input, .image-label, #send-button {
         font-size: 12px;
         padding: 6px 12px;
     }
-
     .message {
         font-size: 20px;
     }
-
     .modal-content {
         max-width: 80%;
         max-height: 80%;
@@ -313,10 +340,13 @@ header p{
     background-color: #009900; /* Darker green on hover */
 }
 
-
 .status-message {
     font-size: 14px;
     color: #7f7d85; /* Bright green text for status messages */
     margin-top: 10px;
-    
 }
+
+
+
+
+
